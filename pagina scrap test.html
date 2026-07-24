@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión & Búsqueda</title>
+  <!-- Tailwind CSS CDN para estilos rápidos y limpios -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen">
+
+  <!-- ==================== VISTA 1: LOGIN ==================== -->
+  <div id="login-view" class="hidden min-h-screen flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-md w-full shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <h1 class="text-2xl font-bold text-white">Iniciar Sesión</h1>
+        <p class="text-slate-400 text-sm">Ingresa credenciales de acceso</p>
+      </div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Usuario</label>
+          <input type="text" id="username" required placeholder="Usuario"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-indigo-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Contraseña</label>
+          <input type="password" id="password" required placeholder="Contraseña"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-indigo-500 transition">
+        </div>
+
+        <button type="submit"
+          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition shadow-lg shadow-indigo-600/30">
+          Entrar al Panel
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== VISTA 2: DASHBOARD ==================== -->
+  <div id="dashboard-view" class="hidden min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+      <div class="flex items-center space-x-3">
+        <div class="bg-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center font-bold">S</div>
+        <span class="font-semibold text-lg text-white">SystemDash</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span id="user-display" class="text-sm text-slate-300"></span>
+        <button id="logout-btn"
+          class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm px-3 py-1.5 rounded-lg border border-slate-600 transition">
+          Cerrar Sesión
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+      
+      <!-- Panel de Controles: Buscador + 3 Filtros -->
+      <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
+        <div class="flex flex-col md:flex-row gap-4">
+          <!-- Búsqueda General -->
+          <div class="flex-1">
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Búsqueda por texto</label>
+            <input type="text" id="search-input" placeholder="Buscar por nombre o ID..."
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <!-- Filtro 1: Categoria (Tipo) -->
+          <div class="w-full md:w-48">
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Filtro 1: Tipo</label>
+            <select id="filter-type"
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+              <option value="ALL">Todos los tipos</option>
+              <option value="Hardware">Hardware</option>
+              <option value="Software">Software</option>
+              <option value="Redes">Redes</option>
+            </select>
+          </div>
+
+          <!-- Filtro 2: Estado -->
+          <div class="w-full md:w-48">
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Filtro 2: Estado</label>
+            <select id="filter-status"
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+              <option value="ALL">Todos los estados</option>
+              <option value="Activo">Activo</option>
+              <option value="En Mantenimiento">En Mantenimiento</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+
+          <!-- Filtro 3: Prioridad -->
+          <div class="w-full md:w-48">
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Filtro 3: Prioridad</label>
+            <select id="filter-priority"
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500">
+              <option value="ALL">Todas las prioridades</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center text-xs text-slate-400 pt-2 border-t border-slate-700/50">
+          <span>Resultados encontrados: <strong id="count-display" class="text-slate-200">0</strong></span>
+          <button id="reset-filters" class="text-indigo-400 hover:underline">Limpiar filtros</button>
+        </div>
+      </section>
+
+      <!-- Tabla de Elementos -->
+      <section class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="bg-slate-900/50 text-slate-400 uppercase text-xs border-b border-slate-700">
+              <tr>
+                <th class="p-4">ID</th>
+                <th class="p-4">Elemento</th>
+                <th class="p-4">Tipo</th>
+                <th class="p-4">Estado</th>
+                <th class="p-4">Prioridad</th>
+                <th class="p-4">Última Revisión</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-700/50">
+              <!-- Renderizado dinámico vía JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+  // 1. Datos del dataset simulado
+  const mockData = [
+    { id: "SYS-101", name: "Servidor Principal Dell PowerEdge", type: "Hardware", status: "Activo", priority: "Alta", lastReview: "2026-03-10" },
+    { id: "SYS-102", name: "Licencia Enterprise Database SQL", type: "Software", status: "Activo", priority: "Alta", lastReview: "2026-02-28" },
+    { id: "SYS-103", name: "Switch Cisco Catalyst 9300", type: "Redes", status: "En Mantenimiento", priority: "Media", lastReview: "2026-03-12" },
+    { id: "SYS-104", name: "Firewall Fortinet FortiGate", type: "Redes", status: "Activo", priority: "Alta", lastReview: "2026-01-15" },
+    { id: "SYS-105", name: "Backup Storage NAS Synology", type: "Hardware", status: "Inactivo", priority: "Baja", lastReview: "2025-11-20" },
+    { id: "SYS-106", name: "Suite CRM Ventas Cloud", type: "Software", status: "Activo", priority: "Media", lastReview: "2026-03-01" },
+    { id: "SYS-107", name: "Access Points WiFi 6 Piso 3", type: "Redes", status: "En Mantenimiento", priority: "Baja", lastReview: "2026-03-14" },
+    { id: "SYS-108", name: "Servidor Secundario de Contingencia", type: "Hardware", status: "Inactivo", priority: "Media", lastReview: "2025-12-05" },
+    { id: "SYS-109", name: "Antivirus Endpoint Protection", type: "Software", status: "Activo", priority: "Alta", lastReview: "2026-03-11" },
+    { id: "SYS-110", name: "Router BGP Balanceador de Carga", type: "Redes", status: "Activo", priority: "Alta", lastReview: "2026-02-18" }
+  ];
+
+  // Credenciales requeridas
+  const VALID_USER = "user";
+  const VALID_PASS = "admin";
+
+  // Referencias al DOM
+  const loginView = document.getElementById("login-view");
+  const dashboardView = document.getElementById("dashboard-view");
+  const loginForm = document.getElementById("login-form");
+  const logoutBtn = document.getElementById("logout-btn");
+  const userDisplay = document.getElementById("user-display");
+
+  const searchInput = document.getElementById("search-input");
+  const filterType = document.getElementById("filter-type");
+  const filterStatus = document.getElementById("filter-status");
+  const filterPriority = document.getElementById("filter-priority");
+  const resetBtn = document.getElementById("reset-filters");
+  const tableBody = document.getElementById("table-body");
+  const countDisplay = document.getElementById("count-display");
+
+  // Mensaje de error dinámico
+  let errorMessage = document.createElement("p");
+  errorMessage.className = "text-rose-400 text-xs text-center font-medium hidden mt-2";
+  errorMessage.textContent = "Usuario o contraseña incorrectos.";
+  loginForm.appendChild(errorMessage);
+
+  // ==========================================
+  // FUNCIONES AUXILIARES PARA MANEJAR COOKIES
+  // ==========================================
+  
+  // Crear una cookie (hours = duración en horas. Si es 0, dura la sesión del navegador)
+  function setCookie(name, value, hours = 0) {
+    let expires = "";
+    if (hours > 0) {
+      const date = new Date();
+      date.setTime(date.getTime() + (hours * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    // SameSite=Strict previene que se envíe en peticiones de sitios externos
+    document.cookie = `${name}=${encodeURIComponent(value)}${expires}; path=/; SameSite=Strict`;
+  }
+
+  // Leer el valor de una cookie por nombre
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i].trim();
+      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+  }
+
+  // Eliminar una cookie
+  function deleteCookie(name) {
+    document.cookie = `${name}=; Max-Age=-99999999; path=/;`;
+  }
+
+  // ==========================================
+  // SISTEMA DE RUTEO Y SESIÓN
+  // ==========================================
+
+  function handleRouting() {
+    const hash = window.location.hash || "#login";
+    const isLoggedIn = getCookie("isLoggedIn") === "true";
+    const username = getCookie("username");
+
+    if (hash === "#dashboard") {
+      if (!isLoggedIn) {
+        // Si no hay cookie de sesión, redirige a login
+        window.location.hash = "#login";
+        return;
+      }
+      loginView.classList.add("hidden");
+      dashboardView.classList.remove("hidden");
+      userDisplay.textContent = `Usuario: ${username || VALID_USER}`;
+      applyFilters();
+    } else {
+      dashboardView.classList.add("hidden");
+      loginView.classList.remove("hidden");
+    }
+  }
+
+  window.addEventListener("hashchange", handleRouting);
+  window.addEventListener("load", handleRouting);
+
+  // Formulario Login
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    
+    if (user === VALID_USER && pass === VALID_PASS) {
+      // Guardar sesión en cookies por 2 horas
+      setCookie("isLoggedIn", "true", 2);
+      setCookie("username", user, 2);
+      
+      errorMessage.classList.add("hidden");
+      loginForm.reset();
+      
+      window.location.hash = "#dashboard";
+    } else {
+      errorMessage.classList.remove("hidden");
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    // Borrar las cookies al cerrar sesión
+    deleteCookie("isLoggedIn");
+    deleteCookie("username");
+    
+    errorMessage.classList.add("hidden");
+    window.location.hash = "#login";
+  });
+
+  // Lógica de Filtrado Combinado
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase().trim();
+    const selectedType = filterType.value;
+    const selectedStatus = filterStatus.value;
+    const selectedPriority = filterPriority.value;
+
+    const filtered = mockData.filter(item => {
+      const matchesQuery = item.name.toLowerCase().includes(query) || item.id.toLowerCase().includes(query);
+      const matchesType = selectedType === "ALL" || item.type === selectedType;
+      const matchesStatus = selectedStatus === "ALL" || item.status === selectedStatus;
+      const matchesPriority = selectedPriority === "ALL" || item.priority === selectedPriority;
+
+      return matchesQuery && matchesType && matchesStatus && matchesPriority;
+    });
+
+    renderTable(filtered);
+  }
+
+  // Badges visuales
+  function getStatusBadge(status) {
+    if (status === "Activo") return `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Activo</span>`;
+    if (status === "En Mantenimiento") return `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Mantenimiento</span>`;
+    return `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-full text-xs font-medium">Inactivo</span>`;
+  }
+
+  function getPriorityBadge(priority) {
+    if (priority === "Alta") return `<span class="text-rose-400 font-semibold">▲ Alta</span>`;
+    if (priority === "Media") return `<span class="text-amber-400 font-semibold">● Media</span>`;
+    return `<span class="text-slate-400 font-semibold">▼ Baja</span>`;
+  }
+
+  // Renderizado de tabla
+  function renderTable(data) {
+    countDisplay.textContent = data.length;
+
+    if (data.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="p-8 text-center text-slate-500">
+            No se encontraron elementos que coincidan con los criterios seleccionados.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = data.map(item => `
+      <tr class="hover:bg-slate-700/30 transition">
+        <td class="p-4 font-mono text-xs text-indigo-400 font-bold">${item.id}</td>
+        <td class="p-4 font-medium text-white">${item.name}</td>
+        <td class="p-4 text-slate-400">${item.type}</td>
+        <td class="p-4">${getStatusBadge(item.status)}</td>
+        <td class="p-4">${getPriorityBadge(item.priority)}</td>
+        <td class="p-4 text-slate-400 font-mono text-xs">${item.lastReview}</td>
+      </tr>
+    `).join("");
+  }
+
+  // Listeners de los filtros
+  searchInput.addEventListener("input", applyFilters);
+  filterType.addEventListener("change", applyFilters);
+  filterStatus.addEventListener("change", applyFilters);
+  filterPriority.addEventListener("change", applyFilters);
+
+  resetBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    filterType.value = "ALL";
+    filterStatus.value = "ALL";
+    filterPriority.value = "ALL";
+    applyFilters();
+  });
+</script>
+</body>
+</html>
